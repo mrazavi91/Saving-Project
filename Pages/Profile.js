@@ -12,7 +12,8 @@ const Profile = () => {
   return (
     
     <View>
-      <Button title='Edit' onPress={()=>navigation.navigate('Edit')}/>
+      <Button title='Edit' onPress={() => navigation.navigate('Edit')} />
+      <Button title='Start a plan' onPress={() => navigation.navigate('New Plan')} />
     </View>
   )
 }

@@ -9,6 +9,7 @@ import Level from '../Pages/Level'
 import Profile from '../Pages/Profile'
 import History from '../Pages/History'
 import EditProfile from '../Components/EditProfile';
+import Plan from '../Pages/Plan';
 
 
 const Stack = createNativeStackNavigator()
@@ -63,7 +64,9 @@ export const StackNav = () => {
     <Stack.Navigator>
       <Stack.Group screenOptions={{headerShown: false}}>
         <Stack.Screen name='Home Screen' component={TabNavigation} />
+        
       </Stack.Group>
+      <Stack.Screen name='New Plan' component={Plan} />
       {/* <Stack.Screen name='Home Screen' component={Home} /> */}
       <Stack.Group screenOptions={{presentation: 'modal'}}>
           <Stack.Screen name= 'Edit' component={EditProfile}/>

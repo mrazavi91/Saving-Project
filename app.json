@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Client-Savig-app",
-    "slug": "Client-Savig-app",
+    "name": "Saving-app",
+    "slug": "Saving-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

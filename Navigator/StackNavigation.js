@@ -10,6 +10,9 @@ import Profile from '../Pages/Profile'
 import History from '../Pages/History'
 import EditProfile from '../Components/EditProfile';
 import Plan from '../Pages/Plan';
+import Login from '../Pages/Login';
+import Signup from '../Pages/Signup';
+import { useUserContext } from '../Hooks/UseUserContext';
 
 
 const Stack = createNativeStackNavigator()
@@ -17,6 +20,7 @@ const Tab = createBottomTabNavigator();
 
 
 export const TabNavigation = () => {
+  
   return (
 
     
@@ -60,12 +64,17 @@ export const TabNavigation = () => {
 }
 
 export const StackNav = () => {
+  const { user } = useUserContext()
   return (
     <Stack.Navigator>
-      <Stack.Group screenOptions={{headerShown: false}}>
-        <Stack.Screen name='Home Screen' component={TabNavigation} />
+      
+      <Stack.Group screenOptions={{ headerShown: false }}>
+        
+        {user && <Stack.Screen name='Home Screen' component={TabNavigation} />}
         
       </Stack.Group>
+      {!user && <Stack.Screen name='Sign up' component={!user ? Signup : TabNavigation} />}
+      {!user && <Stack.Screen name='Log in' component={!user ? Login : TabNavigation} />}
       <Stack.Screen name='New Plan' component={Plan} />
       {/* <Stack.Screen name='Home Screen' component={Home} /> */}
       <Stack.Group screenOptions={{presentation: 'modal'}}>

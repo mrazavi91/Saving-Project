@@ -5,16 +5,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import {StackNav, TabNavigation} from './Navigator/StackNavigation';
 import BottomBar from './Components/BottomBar';
 import { PlanContextProvider } from './Context/PlanContext';
+import { UserContextProvider } from './Context/UserContext';
 
 
 export default function App() {
   return (
- 
-    <PlanContextProvider>
-      <NavigationContainer>
-        <StackNav />
-      </NavigationContainer>
-    </PlanContextProvider>
+    <UserContextProvider>
+      <PlanContextProvider>
+        <NavigationContainer>
+          <StackNav />
+        </NavigationContainer>
+      </PlanContextProvider>
+    </UserContextProvider>
   );
 }
 

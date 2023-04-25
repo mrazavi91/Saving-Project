@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { useUserContext } from '../Hooks/UseUserContext'
 import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
+import usePlanContext from '../Hooks/UsePlanContext'
 
 const LevelList = () => {
     const { user } = useUserContext()
+    const {dispatch,plan} = usePlanContext()
     const [list, setList] = useState([])
     const navigation = useNavigation()
     
@@ -19,6 +21,11 @@ const LevelList = () => {
             })
                 .then((res) => {
                     setList(res.data)
+                    dispatch({
+                        type: 'SET_PLAN',
+                        payload: res.data
+                    })
+
                 
             }).catch((error)=> console.log(error))
         }
@@ -27,17 +34,16 @@ const LevelList = () => {
         if (user) {
             getPlans()
         }
-    }, [])
+    }, [list])
     
     const mapping = list.map((plan) => (
         <View key={plan._id}>
-            <TouchableOpacity onPress={()=> navigation.navigate('Level') }>
+            <TouchableOpacity onPress={()=> navigation.navigate('Level',{plan: plan}) }>
                 <Text>{plan.purpose}</Text>
             </TouchableOpacity>
         </View>
     ))
     
-
   return (
     <View>
       <ScrollView>{mapping}</ScrollView>

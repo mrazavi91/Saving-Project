@@ -33,10 +33,10 @@ const Plan = () => {
             .then((res) => {
                 console.log(res.data)
                 dispatch({
-                    type: 'SET_PLAN',
+                    type: 'CREATE_PLAN',
                     payload: res.data
                 })
-                // navigation.navigate('RoadMap')
+                navigation.navigate('RoadMap')
             })
             .catch((error)=>{ console.log(error)})
         
@@ -44,6 +44,7 @@ const Plan = () => {
         
 
     }
+
     
   return (
     <View>

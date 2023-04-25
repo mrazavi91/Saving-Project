@@ -3,12 +3,14 @@ import React, { useState } from 'react'
 import usePlanContext from '../Hooks/UsePlanContext'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 
-const Level = () => {
-  const { plan } = usePlanContext()
+const Level = ({ route }) => { 
+  
+  
+
   const [modalVisible, setModalVisible] = useState(false);
 
-  console.log(plan)
-  const { amount, duration } = plan
+
+  const { amount, duration } = route.params.plan
   let days =[]
   const savingPlan = ((amount / duration) / 7)
   console.log(!Number.isInteger(savingPlan) ? `£ ${Math.ceil(savingPlan)} average per day` : `£${savingPlan} per day`)

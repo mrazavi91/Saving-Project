@@ -1,7 +1,7 @@
 import { StyleSheet, Text, Touchable, View, Modal, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import usePlanContext from '../Hooks/UsePlanContext'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 
 const Level = () => {
   const { plan } = usePlanContext()
@@ -44,13 +44,15 @@ const Level = () => {
         </TouchableOpacity>
       </View>
      :
-      <Text>day{day}</Text>
+      <Text key={index} >day{day}</Text>
     
     ))
   
   return (
     <View>
-      {mapping}
+      <ScrollView>
+        {mapping}
+      </ScrollView>
     </View>
   )
 }

@@ -15,6 +15,8 @@ import Signup from '../Pages/Signup';
 import { useUserContext } from '../Hooks/UseUserContext';
 import LevelList from '../Pages/LevelList';
 import RoadMap from '../Pages/RoadMap';
+import PaymentInstant from '../Pages/PaymentInstant';
+import Subscription from '../Pages/Subscription';
 
 
 const Stack = createNativeStackNavigator()
@@ -79,9 +81,12 @@ export const StackNav = () => {
       {!user && <Stack.Screen name='Log in' component={!user ? Login : TabNavigation} />}
       <Stack.Screen name='Level' component={Level}/>
       <Stack.Screen name='New Plan' component={Plan} />
+      <Stack.Screen name='Payment' component={PaymentInstant} />
+      <Stack.Screen name='Subscription' component={Subscription} />
       {/* <Stack.Screen name='Home Screen' component={Home} /> */}
       <Stack.Group screenOptions={{presentation: 'modal'}}>
-          <Stack.Screen name= 'Edit' component={EditProfile}/>
+        <Stack.Screen name='Edit' component={EditProfile} />
+        
       </Stack.Group>
     </Stack.Navigator>
   )

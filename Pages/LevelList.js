@@ -36,6 +36,7 @@ const LevelList = () => {
         }
     }, [list])
     
+    
     const mapping = list.map((plan) => (
         <View key={plan._id}>
             <TouchableOpacity onPress={()=> navigation.navigate('Level',{plan: plan}) }>

@@ -1,6 +1,6 @@
 import { Button, StyleSheet, Text, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useStripe, CardField, useConfirmPayment, confirmPayment } from '@stripe/stripe-react-native'
+import { useStripe, CardField, useConfirmPayment } from '@stripe/stripe-react-native'
 import axios from 'axios'
 
 const Subscription = () => {
@@ -8,7 +8,7 @@ const Subscription = () => {
     const [cardDetails, setCardDetails] = useState({})
     const stripe = useStripe();
     const [clientSecret, setClientSecret] = useState('')
-    // const {loading , confirmPayment} = useConfirmPayment()
+    const {loading , confirmPayment} = useConfirmPayment()
 
     const subscribeController = async (e) => {
         //create payment method
@@ -29,9 +29,9 @@ const Subscription = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                name: "momo",
-                email: "paypay@yahoo.com",
-                amount: "500",
+                name: "momo21",
+                email: "paypay22@yahoo.com",
+                amount: "600",
                 paymentMethod: paymentMethod.paymentMethod.id    
             }),
             });
@@ -41,18 +41,13 @@ const Subscription = () => {
             if (!response.ok) return alert("Payment unsuccessful!");
             
             
-            const data = await response.json();
+            const {clientSecret, method} = await response.json();
             
-            setClientSecret(data.clientSecret)
-        //     console.log(typeof clientSecret)
-
-        //     const confirm = await stripe.confirmPayment("pi_3N3H2BLk6lAgcvPf2rsft4u3_secret_cFr85saD97ICu87V9NrzNfjlm", {
-        //         paymentMethodType: "Card"
-        //     });
-            console.log(typeof clientSecret)
+            
+            console.log(clientSecret)
             const { error, paymentIntent } = await confirmPayment(clientSecret, {
                 paymentMethodType: "Card",
-                billingDetails: cardDetails
+                paymentMethodData: { paymentMethodId: method }
             })
             
     

@@ -5,6 +5,10 @@ import usePlanContext from '../Hooks/UsePlanContext'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import { useUserContext } from '../Hooks/UseUserContext'
+import Subscription from './Subscription'
+import { useStripe, CardField, useConfirmPayment, confirmPayment } from '@stripe/stripe-react-native'
+
+
 
 
 const Plan = () => {
@@ -13,7 +17,26 @@ const Plan = () => {
     const [purpose, setPurpose] = useState()
     const { dispatch, plan } = usePlanContext()
     const navigation = useNavigation()
-    const {user} = useUserContext()
+    const { user } = useUserContext()
+    const { createPaymentMethod } = useStripe();
+    const [cardDetails, setCardDetails] = useState({})
+    const stripe = useStripe();
+    const [clientSecret, setClientSecret] = useState('')
+
+    
+    const showPlan = (e) => {
+        e.preventDefault()
+        // if (!amount || !duration || !purpose) {
+        //     alert('please fill up the form')
+        // } else if (amount <= 20) {
+        //     Alert.alert('£21 at least')
+        // } else if (duration < 1) {
+        //     Alert.alert('1 week at least')
+        // }
+
+        
+
+    }
 
     const submitHandler = async (e) => {
         e.preventDefault()
@@ -25,25 +48,71 @@ const Plan = () => {
             Alert.alert('1 week at least')
         }
         
-        await axios.post('http://localhost:12000/plan', { amount, duration, purpose }, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-            .then((res) => {
-                console.log(res.data)
-                dispatch({
-                    type: 'CREATE_PLAN',
-                    payload: res.data
-                })
-                navigation.navigate('RoadMap')
+
+        try {
+            const res = await axios.post('http://localhost:12000/plan', { amount, duration, purpose }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
-            .catch((error)=>{ console.log(error)})
+            dispatch({
+                type: 'CREATE_PLAN',
+                payload: res.data
+            })
+            
+            //---- Subscription 
+            const paymentMethod = await createPaymentMethod({
+                paymentMethodType: 'Card',
+                paymentMethodData: {
+                    billingDetails: cardDetails,
+                }, // optional
+            });
+            console.log(paymentMethod)
+
+            const response = await fetch("http://localhost:12000/payment/subscribe", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: "momo",
+                    email: "paypay@yahoo.com",
+                    amount: "500",
+                    paymentMethod: paymentMethod.paymentMethod.id
+                }),
+            });
+            if (response.ok) {
+                alert("Payment successful!");
+                navigation.navigate('RoadMap')
+
+            }
+
+            
+
+        } catch (error) {
+            console.log(error)
+            
+        }
+        // await axios.post('http://localhost:12000/plan', { amount, duration, purpose }, {
+        //     headers: {
+        //         'Authorization': `Bearer ${user.token}`
+        //     }
+        // })
+        //     .then((res) => {
+        //         console.log(res.data)
+        //         dispatch({
+        //             type: 'CREATE_PLAN',
+        //             payload: res.data
+        //         })
+        //         navigation.navigate('RoadMap')
+        //     })
+        //     .catch((error)=>{ console.log(error)})
         
         
         
 
     }
+
 
     
   return (
@@ -55,7 +124,31 @@ const Plan = () => {
           <TextInput placeholder='Weeks' onChangeText={(duration)=>setDuration(duration)}/>
           <Text>Purpose of saving:</Text>
           <TextInput placeholder='Goal' onChangeText={(purpose) => setPurpose(purpose)} />
-          <Button title='Submit' onPress={submitHandler} />
+          
+          {amount && duration && purpose && <CardField
+              postalCodeEnabled={true}
+              placeholders={{
+                  number: '4242 4242 4242 4242',
+              }}
+              cardStyle={{
+                  backgroundColor: '#FFFFFF',
+                  textColor: '#000000',
+              }}
+              style={{
+                  width: '100%',
+                  height: 50,
+                  marginVertical: 30,
+              }}
+              onCardChange={(cardDetails) => {
+                  //   console.log('cardDetails', cardDetails);
+                  setCardDetails(cardDetails)
+              }}
+              onFocus={(focusedField) => {
+                  console.log('focusField', focusedField);
+              }}
+          />}
+
+          {amount && duration && purpose && <Button title='Submit' onPress={submitHandler}/>}
           
     </View>
   )

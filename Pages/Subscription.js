@@ -1,6 +1,6 @@
 import { Button, StyleSheet, Text, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useStripe, CardField } from '@stripe/stripe-react-native'
+import { useStripe, CardField, useConfirmPayment, confirmPayment } from '@stripe/stripe-react-native'
 import axios from 'axios'
 
 const Subscription = () => {
@@ -8,6 +8,7 @@ const Subscription = () => {
     const [cardDetails, setCardDetails] = useState({})
     const stripe = useStripe();
     const [clientSecret, setClientSecret] = useState('')
+    // const {loading , confirmPayment} = useConfirmPayment()
 
     const subscribeController = async (e) => {
         //create payment method
@@ -28,30 +29,37 @@ const Subscription = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                name: "Alexqwe",
-                email: "Aaqqq@yahoo.com",
-                amount: "10000",
+                name: "momo",
+                email: "paypay@yahoo.com",
+                amount: "500",
                 paymentMethod: paymentMethod.paymentMethod.id    
             }),
             });
         
             
 
-        if (response.ok) return alert("Payment successful!");
+            if (!response.ok) return alert("Payment unsuccessful!");
             
-        //     const data = await response.json();
             
-        //     setClientSecret(data.clientSecret)
+            const data = await response.json();
+            
+            setClientSecret(data.clientSecret)
         //     console.log(typeof clientSecret)
 
         //     const confirm = await stripe.confirmPayment("pi_3N3H2BLk6lAgcvPf2rsft4u3_secret_cFr85saD97ICu87V9NrzNfjlm", {
         //         paymentMethodType: "Card"
         //     });
+            console.log(typeof clientSecret)
+            const { error, paymentIntent } = await confirmPayment(clientSecret, {
+                paymentMethodType: "Card",
+                billingDetails: cardDetails
+            })
             
     
         //     // const confirm = await stripe.confirmPayment({clientSecret: data.clientSecret});
-        //     console.log(confirm)
-        // if (confirm.error) return alert("Payment unsuccessful!");
+            console.log(error, paymentIntent)
+            if (error) return alert("Payment unsuccessful!");
+            if(paymentIntent) return alert("Payment Successful!")
         // alert("Payment Successful! Subscription active.");
     } catch (err) {
         console.error(err);

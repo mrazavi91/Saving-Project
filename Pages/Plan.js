@@ -87,6 +87,13 @@ const Plan = () => {
                 }),
             });
             const { clientSecret, method, id: sub_id } = await response.json();
+            console.log(response)
+
+            if (response.ok) {
+                alert("Payment successful!");
+                // navigation.navigate('RoadMap')
+
+            }
 
 
 
@@ -105,11 +112,7 @@ const Plan = () => {
             
             
 
-            if (response.ok) {
-                alert("Payment successful!");
-                // navigation.navigate('RoadMap')
-
-            }
+            
 
             
 

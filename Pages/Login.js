@@ -14,12 +14,16 @@ const Login = () => {
         e.preventDefault()
         Alert.alert('Login Successful')
     }
+    const forgotUsernamePasswordHandler = (e) => {
+      e.preventDefault()
+      Alert.alert('Please Enter your Account Email on this page')
+    }
 
 
   return (
     <View>
         <Navbar />
-      <Text>Please Login Here:</Text>
+      <Text style={styles.headline}>Please Login Below</Text>
       <Text>Username/Email:</Text>
       <TextInput 
       placeholder='Email/Username here'
@@ -36,6 +40,12 @@ const Login = () => {
       title='Submit'
       onPress={submitHandler}
       />
+
+      <Text>Forgot Username/Password? Please Click Here:</Text>
+      <Button 
+      title='Reset Username/Password'
+      onPress={forgotUsernamePasswordHandler}
+      />
     </View>
   )
 }
@@ -44,6 +54,9 @@ export default Login
 
 // CSS code here to make it look presentable
 const styles = StyleSheet.create({
+    headline:{
+      textAlign:'center'
+    },
     input:{
         //Can use colour code to get any colour
         backgroundColor:'yellow'

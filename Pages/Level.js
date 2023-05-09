@@ -1,77 +1,95 @@
 import { StyleSheet, Text, Touchable, View, Modal, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { addWeeks, addDays } from "date-fns"
+import axios from 'axios'
+import useSavingContext from '../Hooks/UseSavingContext'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Level = ({ route }) => { 
   
-
+  
   const [modalVisible, setModalVisible] = useState(false);
+  const [status, setStatus] = useState('')
+  const[startDate,setStartDate] = useState('')
   console.log(route)
 
-  const { amount, duration } = route.params.plan
+  const { amount, duration ,sub_id} = route.params.plan
   console.log(amount, duration)
   let days = []
   let dates = []
   let dateArray = []
+  let savingAmount = 0
+   
+
+  if (startDate) {
+    for (let i = 0; i <= duration * 7 - 1; i++) {
+      const date = new Date(startDate * 1000);
+      const dateFormat = date.toDateString()
+      const result = addDays(date, i)
+      dates.push(result.toDateString())
+
+    }
+    console.log(typeof dates[0])
 
 
-  
-  for (let i = 0; i <= duration * 7 -1; i++) {
-    const date = new Date();
-    const result = addDays(date, i)
-    dates.push(result)
-    
+    for (let i = 1; i <= duration * 7; i++) {
+      days.push(i)
+    }
+
+
+    dates.forEach((element, index) => {
+      let obj = {}
+      obj[element] = days[index]
+      dateArray.push(obj)
+    })
+  // console.log(dateArray)
   }
-  console.log(dates)
-
- 
-  for (let i = 1; i <= duration * 7; i++) {
-    days.push(i)
+  
+  
+  // date today 
+  const dateToady = new Date()
+  // console.log(dateToady)
+  const formattedToday = dateToady.getTime()
+  if (startDate) {
+    const start = new Date(startDate*1000)
+    console.log(start.getTime())
+    const formattedStartDate = start.getTime()
+    let timeSofar = (formattedToday - formattedStartDate)/(1000*60*60)
+    savingAmount  = timeSofar < 24 ?  amount : amount * timeSofar/24
   }
-
-
-  dates.forEach((element, index) => {
-    let obj ={}
-    obj[element] = days[index]
-    dateArray.push(obj)
-  })
-  console.log(dateArray)
+  console.log('here',savingAmount)
   
 
-
   
-  // const mapping = days.map((day, index) => (
-    
-  //   day% 7 === 0 ?
-  //     <View key={index} style={styles.centeredView}>
-  //       <Modal
-  //         animationType="slide"
-  //         transparent={true}
-  //         visible={modalVisible}
-  //         onRequestClose={() => {
-  //           Alert.alert('Modal has been closed.');
-  //           setModalVisible(!modalVisible);
-  //         }}>
-  //         <View style={styles.modalView}>
-  //             <Text style={styles.modalText}>Congrats!!!</Text>
-  //             <TouchableOpacity
-  //               onPress={() => setModalVisible(!modalVisible)}>
-  //               <Text style={styles.textStyle}>Hide Modal</Text>
-  //           </TouchableOpacity>
-  //           </View>
-  //       </Modal>
-  //       <TouchableOpacity
-  //         style={[styles.button, styles.buttonOpen]}
-  //         onPress={() => setModalVisible(true)}>
-  //         <Text style={styles.textStyle}>day {day}</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //    :
-  //     <Text key={index} >day{day}</Text>
-    
-  //   ))
+  
+  
+  const newDate = new Date().toDateString()
+  console.log(newDate)
+
+  //getting the status 
+  useEffect(() => {
+    const getStatus = async () => {
+      await axios.get(`http://localhost:12000/payment/subscribe/${sub_id}`)
+        .then((res) => {
+          setStatus(res.data.status)
+          setStartDate(res.data.start_date)
+      }).catch((error)=> console.log(error))
+    }
+
+    getStatus()
+   
+  }, [sub_id])
+  // console.log(savingAmount)
+
+   if (status) {
+     console.log(status)
+   }
+  
+   
+
   const mapping = dateArray.map((day, index) => (
+    
 
     parseInt(Object.values(day)) % 7 === 0 ?
       <View key={index} style={styles.centeredView}>
@@ -98,8 +116,9 @@ const Level = ({ route }) => {
         </TouchableOpacity>
       </View>
       :
-      <Text key={index} >day{parseInt(Object.values(day))} {Object.keys(day)}</Text>
-
+      newDate == Object.keys(day) ? <Text key={index} >day{parseInt(Object.values(day))} {Object.keys(day)} **</Text> : <Text key={index} >day{parseInt(Object.values(day))} {Object.keys(day)}</Text>
+      
+    
   ))
   
   return (

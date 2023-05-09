@@ -1,6 +1,6 @@
 import { Button, StyleSheet, Text, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useStripe, CardField, useConfirmPayment } from '@stripe/stripe-react-native'
+import { useStripe, CardField, useConfirmPayment , confirmPayment} from '@stripe/stripe-react-native'
 import axios from 'axios'
 
 const Subscription = () => {
@@ -8,7 +8,7 @@ const Subscription = () => {
     const [cardDetails, setCardDetails] = useState({})
     const stripe = useStripe();
     const [clientSecret, setClientSecret] = useState('')
-    const {loading , confirmPayment} = useConfirmPayment()
+    // const {loading , confirmPayment} = useConfirmPayment()
 
     const subscribeController = async (e) => {
         //create payment method
@@ -21,7 +21,7 @@ const Subscription = () => {
                     billingDetails: cardDetails,
                 }, // optional
             });
-            console.log(paymentMethod)
+            // console.log(paymentMethod)
 
             const response = await fetch("http://localhost:12000/payment/subscribe", {
             method: "POST",
@@ -29,8 +29,8 @@ const Subscription = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                name: "momo21",
-                email: "paypay22@yahoo.com",
+                name: "hsgdd",
+                email: "paydddy22@yahoo.com",
                 amount: "600",
                 paymentMethod: paymentMethod.paymentMethod.id    
             }),
@@ -41,20 +41,22 @@ const Subscription = () => {
             if (!response.ok) return alert("Payment unsuccessful!");
             
             
-            const {clientSecret, method} = await response.json();
+            const res = await response.json();
+           
             
             
-            console.log(clientSecret)
-            const { error, paymentIntent } = await confirmPayment(clientSecret, {
-                paymentMethodType: "Card",
-                paymentMethodData: { paymentMethodId: method }
-            })
+            
+            // const { error, paymentIntent } = await confirmPayment(clientSecret, {
+            //     paymentMethodType: "Card",
+            //     paymentMethodData: { paymentMethodId: method }
+            // })
+            // const paymentConfirm = await confirmPayment(clientSecret)
             
     
         //     // const confirm = await stripe.confirmPayment({clientSecret: data.clientSecret});
-            console.log(error, paymentIntent)
-            if (error) return alert("Payment unsuccessful!");
-            if(paymentIntent) return alert("Payment Successful!")
+            // console.log(paymentConfirm)
+            // if (paymentConfirm.error) return alert("Payment unsuccessful!");
+            // if(paymentConfirm.paymentIntent) return alert("Payment Successful!")
         // alert("Payment Successful! Subscription active.");
     } catch (err) {
         console.error(err);

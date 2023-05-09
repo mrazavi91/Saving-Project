@@ -86,35 +86,32 @@ const Plan = () => {
                     cancel_at: timeStamp
                 }),
             });
-            const { clientSecret, method, id: sub_id } = await response.json();
-            console.log(response)
+            const { clientSecret, method, id: sub_id, created , status} = await response.json();
+            
+            
 
             if (response.ok) {
                 alert("Payment successful!");
-                // navigation.navigate('RoadMap')
+                
+                const res = await axios.post('http://localhost:12000/plan', { savingPerDay, duration, purpose, sub_id, amountSaved: 0, created  }, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
 
+                // console.log(res.data)
+
+                dispatch({
+                    type: 'CREATE_PLAN',
+                    payload: res.data
+                })
+                navigation.navigate('Home')
+
+
+            } else {
+                alert("Payment unsuccessful!");
             }
 
-
-
-            const res = await axios.post('http://localhost:12000/plan', { savingPerDay, duration, purpose, sub_id }, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-
-            console.log(res.data)
-
-            dispatch({
-                type: 'CREATE_PLAN',
-                payload: res.data
-            })
-            
-            
-
-            
-
-            
 
         } catch (error) {
             console.log(error)

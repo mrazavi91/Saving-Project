@@ -33,9 +33,9 @@ export const TabNavigation = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           const icons = {
+            RoadMap: 'map',
             Home: 'home',
             Wallet: 'wallet',
-            RoadMap: 'map',
             History: 'history',
             Profile: 'account',
           };

@@ -1,21 +1,24 @@
-import { StyleSheet, Text, Touchable, View, Modal, Pressable } from 'react-native'
+import { StyleSheet, Text, Touchable, View, Modal, Pressable, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { addWeeks, addDays } from "date-fns"
 import axios from 'axios'
 import useSavingContext from '../Hooks/UseSavingContext'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserContext } from '../Hooks/UseUserContext'
 
 const Level = ({ route }) => { 
   
-  
+  const {user} = useUserContext()
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState('')
-  const[startDate,setStartDate] = useState('')
-  console.log(route)
+  const [startDate, setStartDate] = useState('')
+  const [rewards, setRewards] = useState([])
+  const [singleReward ,  setSingleRewards ] = useState({})
+  // console.log(route)
 
   const { amount, duration ,sub_id} = route.params.plan
-  console.log(amount, duration)
+  // console.log(amount, duration)
   let days = []
   let dates = []
   let dateArray = []
@@ -30,7 +33,7 @@ const Level = ({ route }) => {
       dates.push(result.toDateString())
 
     }
-    console.log(typeof dates[0])
+    // console.log(typeof dates[0])
 
 
     for (let i = 1; i <= duration * 7; i++) {
@@ -43,7 +46,7 @@ const Level = ({ route }) => {
       obj[element] = days[index]
       dateArray.push(obj)
     })
-  // console.log(dateArray)
+  
   }
   
   
@@ -58,15 +61,28 @@ const Level = ({ route }) => {
     let timeSofar = (formattedToday - formattedStartDate)/(1000*60*60)
     savingAmount  = timeSofar < 24 ?  amount : amount * timeSofar/24
   }
-  console.log('here',savingAmount)
+
   
 
   
   
   
   const newDate = new Date().toDateString()
-  console.log(newDate)
+ 
+  //getting the rewards 
+  const getRewards = async () => {
 
+    try {
+      //fetch the data from reward.json
+      const response = await axios.get("http://localhost:9999/rewards")
+      setRewards(response.data)
+      
+    } catch (error) {
+      console.log(error)
+    }
+
+    
+  }
   //getting the status 
   useEffect(() => {
     const getStatus = async () => {
@@ -78,13 +94,47 @@ const Level = ({ route }) => {
     }
 
     getStatus()
+    getRewards()
    
   }, [sub_id])
   // console.log(savingAmount)
 
    if (status) {
-     console.log(status)
+    //  console.log(status)
    }
+  
+  const modalController = () => {
+    //choose random rewards 
+    const randomReward = Math.floor(Math.random() * rewards.length)
+    console.log(rewards[randomReward])
+    
+    setSingleRewards(rewards[randomReward])
+
+    setModalVisible(true)
+  }
+
+  console.log(singleReward) 
+  
+
+  const rewardController = async () => {
+    console.log('first')
+    //post rewards 
+    try {
+      const res = await axios.post('http://localhost:12000/rewards', singleReward, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
+      console.log(res.data)
+    } catch (error) {
+      console.log(error)
+    }
+
+    //close after all 
+
+    setModalVisible(!modalVisible)
+    
+  }
   
    
 
@@ -99,20 +149,24 @@ const Level = ({ route }) => {
           visible={modalVisible}
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}>
+            setModalVisible(!modalVisible);}}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Congrats!!!</Text>
+            <Text>{singleReward.name} </Text>
+            <Text>{singleReward.type} </Text>
             <TouchableOpacity
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
+              onPress={rewardController}>
+              <Text style={styles.textStyle}>Claim Reward</Text>
+              {/* <Button style={'claim'} title='Claim Reward' onPress={rewardController}/> */}
             </TouchableOpacity>
           </View>
         </Modal>
+        
         <TouchableOpacity
           style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(true)}>
-          <Text style={styles.textStyle}>day {parseInt(Object.values(day))}</Text>
+          onPress={modalController}>
+          {newDate == Object.keys(day) ? <Text style={styles.textStyle}>day {parseInt(Object.values(day))}**</Text> : <Text style={styles.textStyle}>day {parseInt(Object.values(day))}</Text>}
+          {/* // <Text style={styles.textStyle}>day {parseInt(Object.values(day))}</Text> */}
         </TouchableOpacity>
       </View>
       :
@@ -120,6 +174,7 @@ const Level = ({ route }) => {
       
     
   ))
+  console.log(newDate)
   
   return (
     <View>
@@ -154,5 +209,9 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  claim: {
+    margin: 10,
+    padding: 10
   }
 })

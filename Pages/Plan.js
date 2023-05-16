@@ -54,16 +54,7 @@ const Plan = () => {
         
 
         try {
-            // const res = await axios.post('http://localhost:12000/plan', { savingPerDay, duration, purpose }, {
-            //     headers: {
-            //         'Authorization': `Bearer ${user.token}`
-            //     }
-            // })
             
-            // dispatch({
-            //     type: 'CREATE_PLAN',
-            //     payload: res.data
-            // })
             
             //---- Subscription 
             const paymentMethod = await createPaymentMethod({
@@ -105,7 +96,7 @@ const Plan = () => {
                     type: 'CREATE_PLAN',
                     payload: res.data
                 })
-                navigation.navigate('Home')
+                navigation.navigate('RoadMap')
 
 
             } else {

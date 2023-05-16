@@ -6,59 +6,73 @@ import useSavingContext from '../Hooks/UseSavingContext'
 import usePlanContext from '../Hooks/UsePlanContext'
 import { useUserContext } from '../Hooks/UseUserContext'
 import axios from 'axios'
+import useGetPlan from '../Hooks/UseGetPlan'
+import useGetReward from '../Hooks/UseGetReward'
+import { useFocusEffect, useIsFocused } from '@react-navigation/native'
 
 
 const Home = () => {
   // const [saving, setSaving] = useState('10')
   const { logout } = useLogout()
-  const {user} =  useUserContext()
-  const [list, setList] = useState([])
-  const { current: myArray } = useRef(list);
+  const { user } = useUserContext()
   const { dispatch, plan } = usePlanContext()
+  const planUrl = "http://localhost:12000/plan"
+  const rewardUrl = "http://localhost:12000/rewards"
+  const { isLoading, apiData, serverError } = useGetPlan(planUrl)
+  const { isLoading: isLoadingReward, apiData: rewards , serverError: rewardsError } = useGetPlan(rewardUrl)
+  
+  console.log(rewards)
+  const isFocused = useIsFocused()
 
-  useEffect(() => {
-    const getPlans = async () => {
-      await axios.get('http://localhost:12000/plan', {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-        .then((res) => {
-          setList(res.data)
-          dispatch({
-            type: 'SET_PLAN',
-            payload: res.data
-          })
-        }).catch((error) => console.log(error))
-    }
-    //calling function and setting up if statement
+  
 
-    if (user) {
-      getPlans()
-    }
-  }, [myArray])
+ 
   // console.log(list)
 
   let totalSaving = []
   
   
     
-  
+  // console.log(list)
 
-  for (let i = 0; i < list.length; i++) {
-    let each  = list[i].amountSaved
-    totalSaving.push(each)
-    console.log(each)
+  if(apiData){
+    for (let i = 0; i < apiData.length; i++) {
+    let each  = apiData[i].amountSaved
+    totalSaving.push(each)}
+    
   }
   const totalSavingNumber = totalSaving.reduce((a, b) => a + b, 0)
-  console.log(totalSavingNumber)
 
   
+
+  
+
+  //---------------------getting the rewards-------------------------- 
+
+  
+  
+    
+    
+  
+
+
+
+
+
+
   return (
     <View>
+          {isLoading && <Text>Loading...</Text>}
+      {apiData && <Text>Your Savings:{totalSavingNumber}</Text>}
+    
+      <Button title='logout' onPress={() => logout()} />
       
-      {plan && <Text>Your Earnings:{totalSavingNumber}</Text> }
-          <Button title= 'logout' onPress={()=> logout()}/>
+      <Text>Your rewards: </Text>
+      {rewards && rewards.map((reward) => (
+        <Text key={reward._id}>{reward.name}</Text>
+      ))}
+
+      
     </View>
   )
 }

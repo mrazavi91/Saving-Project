@@ -11,9 +11,11 @@ const LevelList = () => {
     const [list, setList] = useState([])
     const { current: myArray } = useRef(list);
     const navigation = useNavigation()
-    console.log(plan)
+    // console.log(plan)
+  
     
 
+    
     useEffect(() => {
         const getPlans = async () => {
             await axios.get('http://localhost:12000/plan', {
@@ -23,20 +25,29 @@ const LevelList = () => {
             })
                 .then((res) => {
                     setList(res.data)
-                    dispatch({
-                        type: 'SET_PLAN',
-                        payload: res.data
-                    })
+                    // console.log(res.data)
+                    if (res.status === 200) {
+                        dispatch({
+                            type: 'SET_PLAN',
+                            payload: res.data
+                        })
+                    }
 
-                
-            }).catch((error)=> console.log(error))
+
+
+                }).catch((error) => console.log(error))
         }
+        
         //calling function and setting up if statement
-        if (user) {
-            getPlans()
-        }
-    }, [myArray])
-    // console.log(list)    
+        setTimeout(() => {
+            if (user) {
+                getPlans()
+            }
+        },1000)
+        
+    }, [dispatch])
+    // console.log(list)  
+
     
     const updateNewAmount = async (plan) => {
         // console.log(plan._id)
@@ -59,7 +70,7 @@ const LevelList = () => {
                     'Authorization': `Bearer ${user.token}`
                 }
             })
-            console.log(res.data)
+            
 
 
         } catch (error) {
